@@ -1,0 +1,6 @@
+{
+    "require-dev": {
+        "behat/behat": "^3.29",
+        "drupal/drupal-extension": "^5.3"
+    }
+}
