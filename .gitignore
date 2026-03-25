@@ -1,0 +1,13 @@
+# Docker
+.env
+
+# Drupal
+web/sites/default/settings.php
+web/sites/default/files/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
