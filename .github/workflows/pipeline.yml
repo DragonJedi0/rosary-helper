@@ -32,15 +32,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Behat
+      - name: Wait for Drupal
+        run: sleep 10
+
+      - name: Install Composer dependencies
         run: |
-          docker exec ${{ job.services.drupal.id }} bash -c "cd /var/www/html && composer require --dev behat/behat drupal/drupal-extension"
-      
+          docker exec ${{ job.services.drupal.id }} bash -c "cd /opt/drupal && composer require --dev behat/behat drupal/drupal-extension && composer require drush/drush:^13 -W"
+
       - name: Copy Behat config and features
         run: |
-          docker cp behat.yml ${{ job.services.drupal.id }}:/var/www/html/behat.yml
-          docker cp features ${{ job.services.drupal.id }}:/var/www/html/features
+          docker cp behat.yml ${{ job.services.drupal.id }}:/opt/drupal/behat.yml
+          docker cp features ${{ job.services.drupal.id }}:/opt/drupal/features
+
+      - name: Seed test content
+        run: |
+          docker exec ${{ job.services.drupal.id }} bash -c "cd /opt/drupal && vendor/bin/drush php:eval \"\\\$node = \Drupal\node\Entity\Node::create(['type' => 'page', 'title' => 'Welcome to Holy Rosary', 'status' => 1]); \\\$node->save();\""
+          docker exec ${{ job.services.drupal.id }} bash -c "cd /opt/drupal && vendor/bin/drush config:set system.site page.front /node/1 -y"
 
       - name: Run Behat tests
         run: |
-          docker exec ${{ job.services.drupal.id }} bash -c "cd /var/www/html && vendor/bin/behat"
+          docker exec ${{ job.services.drupal.id }} bash -c "cd /opt/drupal && vendor/bin/behat"
