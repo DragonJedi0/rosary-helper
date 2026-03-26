@@ -32,5 +32,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install Behat
+        run: |
+          docker exec ${{ job.services.drupal.id }} bash -c "cd /var/www/html && composer require --dev behat/behat drupal/drupal-extension"
+      
+      - name: Copy Behat config and features
+        run: |
+          docker cp behat.yml ${{ job.services.drupal.id }}:/var/www/html/behat.yml
+          docker cp features ${{ job.services.drupal.id }}:/var/www/html/features
+
       - name: Run Behat tests
-        run: echo "Tests will run here"
+        run: |
+          docker exec ${{ job.services.drupal.id }} bash -c "cd /var/www/html && vendor/bin/behat"
