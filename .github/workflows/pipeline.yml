@@ -1,0 +1,36 @@
+name: Drupal CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: postgres:16
+        env:
+          POSTGRES_DB: drupal
+          POSTGRES_USER: drupal
+          POSTGRES_PASSWORD: drupal
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      drupal:
+        image: drupal:10-apache
+        ports:
+          - 8080:80
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Behat tests
+        run: echo "Tests will run here"
