@@ -1,6 +1,8 @@
 default:
   suites:
     default:
+      paths:
+        - /var/www/html/features
       contexts:
         - FeatureContext
         - Drupal\DrupalExtension\Context\DrupalContext
