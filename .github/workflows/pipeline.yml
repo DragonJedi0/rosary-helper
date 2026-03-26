@@ -44,6 +44,10 @@ jobs:
           docker cp behat.yml ${{ job.services.drupal.id }}:/opt/drupal/behat.yml
           docker cp features ${{ job.services.drupal.id }}:/opt/drupal/features
 
+      - name: Install Drupal
+        run: |
+          docker exec ${{ job.services.drupal.id }} bash -c "cd /opt/drupal && vendor/bin/drush site:install standard --db-url=pgsql://drupal:drupal@db/drupal --account-pass=admin -y"
+
       - name: Seed test content
         run: |
           docker cp scripts/create-test-content.php ${{ job.services.drupal.id }}:/opt/drupal/create-test-content.php
