@@ -46,8 +46,8 @@ jobs:
 
       - name: Seed test content
         run: |
-          docker exec ${{ job.services.drupal.id }} bash -c "cd /opt/drupal && vendor/bin/drush php:eval \"\\\$node = \Drupal\node\Entity\Node::create(['type' => 'page', 'title' => 'Welcome to Holy Rosary', 'status' => 1]); \\\$node->save();\""
-          docker exec ${{ job.services.drupal.id }} bash -c "cd /opt/drupal && vendor/bin/drush config:set system.site page.front /node/1 -y"
+          docker cp scripts/create-test-content.php ${{ job.services.drupal.id }}:/opt/drupal/create-test-content.php
+          docker exec ${{ job.services.drupal.id }} bash -c "cd /opt/drupal && vendor/bin/drush php:script create-test-content.php"
 
       - name: Run Behat tests
         run: |
